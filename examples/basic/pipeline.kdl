@@ -1,0 +1,27 @@
+meta {
+    config-version {
+        major 0
+        minor 1
+    }
+    name "Basic Test"
+    version "0.1"
+    authors "lilyyy411"
+    description "The most basic pipeline config. All it does is play a video to the wallpaper."
+}
+
+inputs {
+    // This is a video texture. Since it's the first in the list,
+    // it gets assigned to uniform `texture_0`. `audio="true"` means that
+    // it unmutes the video, and the scaling gives the option to scale/crop
+    // the video based on display size.
+    video "../media/jasmine.mp4" audio="true" scaling="crop-to-fit"
+}
+
+// The pipeline is made up of an arbitrary number of stages. Each stage runs sequentially
+// and either renders to its own custom output buffer for other stages to use,
+// or the main framebuffer. When no output is provided, it uses the default output
+// framebuffer.
+stage {
+    vert "src/vert.glsl"
+    frag "src/frag.glsl"
+}

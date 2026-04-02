@@ -1,0 +1,3 @@
+ /* noop vertex shader file that does nothing.
+  Shows off the power of the common node.*/
+ int _;

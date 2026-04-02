@@ -1,0 +1,30 @@
+[workspace]
+resolver = "3"
+members = [
+  "hypatia",  # core binary
+  "mini-gl-bindings",  # raw unsound opengl bindings
+  "mini-log",  # non-bloated logging utilities
+  "mpv-gl-renderer"  # really nice mpv bindings
+]
+
+[workspace.dependencies]
+bytemuck = { version = "1.25.0", features = ["derive"] }
+error_set = "0.9.1"
+eyre = "0.6.12"
+facet = "0.42.0"
+facet-kdl = "0.42.0"
+glam = { version = "0.32.0", default-features = false, features = [
+  "bytemuck",
+  "std"
+] }
+glutin = { version = "0.32.3", default-features = false, features = [
+  "egl",
+  "wayland"
+] }
+larpa = "0.1.1"
+libc = "0.2.182"
+miette = { version = "7.6.0", features = ["fancy"] }
+raw-window-handle = "0.6.2"
+wayland-client = "0.31.12"
+wayland-egl = "0.32.9"
+wayland-protocols-wlr = { version = "0.3.10", features = ["client"] }

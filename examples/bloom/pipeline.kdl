@@ -1,0 +1,146 @@
+// This example is a more advanced somewhat practical showcase of Hypatia's abilities.
+// Hypatia allows quite flexible multi-pass pipelines, with scalings on the outputs
+// and convenient code sharing.
+//
+// This example shows off "common" shaders and intermediate outputs by primarily implementing
+// the dual Kawase blur (as a bloom) as well as some more advanced graphics techniques
+// that may be useful when making your own shaders.
+//
+//
+//
+// Here's a summary of the pipeline:
+//
+// 1) Convert the input video to linear RGB and apply inverse tonemapping to expand the texture into HDR.
+// Then apply a vignette based on the fade value. Output buffers default to 16 bit float RGB (and not RGBA,
+// so you can't do alpha trickery yet).
+//
+// 2) Apply 3 downsampling and 3 upsampling passes for the Kawase blur.
+// Since we're in HDR, we have to apply a Karis average to the first downsample
+// to avoid fireflies (and NOT to the other passes)
+//
+// 3) Fuse the blurred and original texture together based on bloom strength.
+// The Kawase blur in HDR accentuates the bright pixels already, so there's
+// no need to tell it what areas to blur and you can just simply mix the
+// textures together.
+//
+// Ideally, you'd combine multiple passes of blur to
+// get more realistic tapering off bright areas, but I was too lazy.
+//
+// 4) Apply a color grading map to the output. The map used here is a 4-bit map
+// that performs some white balancing to warm the tones a bit as the original
+// input is a little too cold for my taste. Also great opportunity to show off
+// the usage of images as input.
+meta {
+    config-version {
+        major 0
+        minor 1
+    }
+    name "Bloom test"
+    version "0.1"
+    authors "lilyyy411"
+    description "A more advanced of Hypatia's pipelines showcasing custom outputs and scaling. Features inverse tonemapping to place the video into HDR, and then performs a 3-pass dual-Kawase-based bloom topped off with color grading."
+}
+
+
+// The common node allows listing shaders that are linked to every other pass in the pipeline.
+// Files under the `frag` node are treated as fragment shaders and files under the `vert` node
+// are treated as vertex shaders.
+//
+// Currently, Hypatia provides no #include system, so you have to write declarations manually
+// when you want to do code sharing.
+common {
+    frag "src/sample.glsl"
+    vert "src/vert.glsl"
+    frag "src/common.glsl"
+}
+
+
+inputs {
+    video "../media/jasmine.mp4" audio="true" scaling="crop-to-fit"
+    // Color grading map.
+    // Shifts the colors a bit warmer and especially redshifts darker tones
+    image "grade.png"
+
+}
+
+// Inverse tonemapping + vignette on fade
+stage {
+    output {
+        name "mapped"
+    }
+    vert "nop"
+    frag "src/inv_map.glsl"
+}
+
+// Kawase downsampling
+stage {
+    output {
+        name "down_1"
+        scale 0.5
+    }
+    vert "nop"
+    frag "src/down/1.glsl"
+}
+
+stage {
+    output {
+        name "down_2"
+        scale 0.25
+    }
+    vert "nop"
+    frag "src/down/2.glsl"
+}
+
+stage {
+    output {
+        name "down_final"
+        scale 0.125
+    }
+    vert "nop"
+    frag "src/down/3.glsl"
+}
+
+// Kawase upsampling
+stage {
+    output {
+        name "up_1"
+        scale 0.25
+    }
+    vert "nop"
+    frag "src/up/1.glsl"
+}
+
+
+stage {
+    output {
+        name "up_2"
+        scale 0.50
+    }
+    vert "nop"
+    frag "src/up/2.glsl"
+}
+
+stage {
+    output {
+        name "blurred"
+        scale 1.0
+    }
+    vert "nop"
+    frag "src/up/3.glsl"
+}
+
+// Fuse the blurred and original textures to make a bloom
+// (brighter areas already get naturally blurred stronger).
+stage {
+    output {
+        name "processed"
+    }
+    vert "nop"
+    frag "src/out.glsl"
+}
+
+// Color grading.
+stage {
+    vert "nop"
+    frag "src/post.glsl"
+}

@@ -1,0 +1,32 @@
+[package]
+name = "mpv-gl-renderer"
+version = "0.1.0"
+edition = "2024"
+
+[[test]]
+harness = false
+name = "mpv_test"
+path = "tests/mpv_test.rs"
+
+[dependencies]
+bitflags = "2.11.0"
+bon = "3.9.0"
+libmpv2-sys = "4.0.1"
+stable_deref_trait = "1.2.1"
+
+# Yes, i'm using gtk for the test environment...
+# I originally used it because early stages of the
+# project used gtk
+[dev-dependencies]
+color-backtrace = "0.7.2"
+epoxy = "0.1.0"
+eyre.workspace = true
+gtk4 = "0.10.3"
+indenter = "0.3.4"
+libc.workspace = true
+libloading = "0.9.0"
+linkme = "0.3.35"
+macro_rules_attribute = "0.2.2"
+owo-colors = "4.2.3"
+pretty_assertions = "1.4.1"
+termcolor = "1.4.1"

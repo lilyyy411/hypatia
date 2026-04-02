@@ -1,0 +1,10 @@
+[package]
+name = "mini-log"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ansi-width = "0.1.0"
+crossbeam-channel = "0.5.15"
+jiff =  "0.2.21"
+owo-colors = "4.3.0"

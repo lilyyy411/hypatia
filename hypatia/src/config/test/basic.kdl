@@ -1,0 +1,38 @@
+meta {
+    config-version {
+        major 0
+        minor 1
+    }
+    name "Silly Test"
+    version "0.1"
+    authors "Me" "Silly"
+    description "A very silly pipeline config"
+}
+
+inputs {
+    video "media/hypatia 2.mp4" scaling="unscaled"
+    image "lol.png"
+}
+
+stage {
+    output {
+        name "bloom_buffer"
+        scale 0.5
+    }
+    vert "vert.glsl"
+    frag "frag-bloom.glsl"
+}
+
+stage {
+    output {
+        name "buffer2_electric_boogaloo"
+        size width=1920 height=1080
+    }
+    vert "vert.glsl"
+    frag "frag2.glsl"
+}
+
+stage {
+    vert "vert.glsl"
+    frag "frag.glsl"
+}
