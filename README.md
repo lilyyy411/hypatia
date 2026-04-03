@@ -1,5 +1,7 @@
 # Hypatia - Live interactive desktop wallpapers for Wayland
 
+Disclaimer: This project is not even close to feature-complete yet and is likely buggy. I still need to write documentation.
+
 Hypatia is a modern feature-rich interactive live wallpaper application for Wayland compositors that support the layer shell protocol.
 It allows users to not only play videos on their desktop wallpaper, but also have custom responsive post-processing effects. 
 
@@ -7,7 +9,7 @@ It allows users to not only play videos on their desktop wallpaper, but also hav
 - Play videos/static images on the desktop wallpaper
 - Configurable fading in/out of audio + playing/pausing when hovering/stop hovering over the desktop
 - Custom multi-stage GLSL shader pipeline configured through KDL
-- Change wallpapers with a transition effect
+- Change wallpapers with a transition effect (not implemented yet)
 - Does not sell your data to Fraser (if you know you know)
 
 Because of the extensive customization that Hypatia allows (see the `documentation` folder), it can also be used as a tool similar to ShaderToy (but local) 
@@ -31,14 +33,15 @@ cargo install --path=.
 
 
 ## TODO
-- Custom transition shaders
+- Implement IPC control
+- Implement transitions, custom transition shaders
 - Support screenshots
 - Give access to time-based uniforms in shaders
 - Allow playing audio files independent of video 
-- Setting custom mpv options
-- Audio visualization support?
-- Custom vertex buffers? 
-- Changing intermediate texture storage format
+- Allow setting custom mpv options
+- Add audio visualization support?
+- Allow custom vertex buffers? 
+- Allow changing intermediate texture storage format? (currently RGBF16)
 
 ## FAQ
 - Q: Why? You're basically reinventing wallpaper engine and there are so many Wallpaper Engine alternatives for Linux out there.
