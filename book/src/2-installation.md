@@ -27,6 +27,7 @@ If you're on a Debian-based distribution, you can build and install `deb` packag
 ```sh
 cargo deb --install
 ```
+The deb package also installs a copy of the source for this book to `/usr/share/doc/hypatia/documentation` for use as a reference.
 
 On other distributions, you can just install the binary through the standard Cargo build and install process:
 

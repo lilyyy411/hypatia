@@ -2,6 +2,7 @@
 name = "hypatia"
 version = "0.1.0"
 edition = "2024"
+description = "Live interactive shader and video wallpapers for Wayland"
 license = "MIT OR Apache-2.0"
 
 [package.metadata.deb]
@@ -9,9 +10,14 @@ name = "hypatia"
 maintainer = "lilyyy411"
 depends = "$auto, mpv"  # yes, that's it. all you need is mpv
 assets = [
-  ["../LICENSE*", "usr/share/doc/hypatia", "644"],
-  ["../README.md", "usr/share/doc/hypatia/README.md", "644"],
-  ["../documentation/*", "usr/share/doc/hypatia/documentation", "644"],
+  ["../LICENSE*", "/usr/share/doc/hypatia", "644"],
+  ["../README.md", "/usr/share/doc/hypatia/README.md", "644"],
+  ["../documentation/*", "/usr/share/doc/hypatia/documentation", "644"],
+  [
+    "../documentation/src/*",
+    "/usr/share/doc/hypatia/documentation/src",
+    "644"
+  ],
   ["target/release/hypatia", "/usr/bin/hypatia", "755"],
 ]
 
