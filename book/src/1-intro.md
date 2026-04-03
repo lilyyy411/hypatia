@@ -17,5 +17,5 @@ that respond to input.
 ## Platform Support
 Hypatia supports basically any Linux distribution running a Wayland compositor 
 that has support for the [layer shell protocol](<https://wayland.app/protocols/wlr-layer-shell-unstable-v1>).
-It is currently tested on my personal laptop running Linux Mint with the [niri](<https://github.com/niri-wm/niri>) compositor 
+It is currently tested on my personal laptop running Linux Mint with the [Niri](<https://github.com/niri-wm/niri>) compositor 
 to ensure that it can run even with ancient packages, but many users run it on various other distros without any issues.
