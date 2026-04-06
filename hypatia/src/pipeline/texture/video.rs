@@ -102,6 +102,7 @@ impl VideoTexture {
             c"loop"=c"inf"
             c"keep-open"=c"yes"
             c"input-default-bindings"=false
+            c"input-vo-keyboard"=false
             c"osc"=false
             // update immediately after rendering
             c"video-timing-offset"=0
@@ -109,9 +110,6 @@ impl VideoTexture {
             c"load-scripts"=false
             // don't vsync me plz
             c"opengl-swapinterval"=0
-            // load a bunch of video into memory so it can run better
-            // (we can afford it)
-            c"demuxer-readahead-secs"=10
             c"vd-lavc-dr"=true
         );
         let display = cx.surface().display();
