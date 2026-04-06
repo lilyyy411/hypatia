@@ -176,9 +176,9 @@ impl WipWindow {
             return Err(InitError::NoBaseSurface);
         };
 
-        if state.globals.seat.is_none() {
-            return Err(InitError::NoSeat);
-        }
+        // if state.globals.seat.is_none() {
+        //     return Err(InitError::NoSeat);
+        // }
         // we have the globals now. now let's wait for output
         if let Some(wanted_output) = state.wanted_output_name.clone() {
             while !state.outputs_done {
@@ -619,7 +619,7 @@ pub struct MessageHandlerWrapper<T>(T);
 pub struct LayerWindow {
     connection: Arc<Connection>,
     display: WlDisplay,
-    seat: WlSeat,
+    seat: Option<WlSeat>,
     base_surface: WlSurface,
     compositor: WlCompositor,
     egl_surface: WlEglSurface,
@@ -645,7 +645,7 @@ impl LayerWindow {
         let window = LayerWindow {
             connection,
             display: window.display,
-            seat: window.globals.seat.unwrap(),
+            seat: window.globals.seat,
             base_surface: window.base_surface.unwrap(),
             compositor: window.globals.compositor.unwrap(),
             egl_surface: window.egl_surface.unwrap(),
@@ -683,7 +683,7 @@ impl LayerWindow {
         if let WEnum::Value(caps) = self.seat_capabilities
             && caps.contains(Capability::Pointer)
         {
-            _ = self.seat.get_pointer(handle, ());
+            _ = self.seat.as_ref()?.get_pointer(handle, ());
             Some(())
         } else {
             None
@@ -700,7 +700,7 @@ impl LayerWindow {
         if let WEnum::Value(caps) = self.seat_capabilities
             && caps.contains(Capability::Keyboard)
         {
-            _ = self.seat.get_keyboard(handle, ());
+            _ = self.seat.as_ref()?.get_keyboard(handle, ());
             Some(())
         } else {
             None
