@@ -217,8 +217,10 @@ impl DynamicTexture for VideoTexture {
         progress: f64,
         behavior: &FocusBehavior,
     ) -> eyre::Result<()> {
-        self.mpv
-            .set_prop(c"volume", self.max_volume as f64 * progress)?;
+        if self.max_volume > 0.0 {
+            self.mpv
+                .set_prop(c"volume", self.max_volume as f64 * progress)?;
+        }
         if behavior.pause && direction == FadeDirection::Out && progress == 0.0 {
             // we completed the fade. pause
             self.mpv.set_prop(c"pause", true)?;

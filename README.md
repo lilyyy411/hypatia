@@ -70,3 +70,7 @@ cargo install --path=.
      the ability to manipulate matter upon physical contact, changing its properties and composition. Hypatia (the application) encourages users to "invent" their
      own wallpapers / effects and fully manipulate their desktop experience. It's also kind of ironic to name an interactive wallpaper program after someone who does not like to interact 
      with others and has a terrible sense of humor.
+
+## Known Issues
+- When running with `swaylock-plugin`, does not render past the first frame because of
+   `Io error: Broken pipe (os error 32)`. This is fixed by setting `--fixed-focus`, but I'm trying to figure out the solution
