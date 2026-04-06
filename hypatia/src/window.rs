@@ -169,10 +169,10 @@ impl WipWindow {
                 .roundtrip(&mut state)
                 .log_error("Failed to roundtrip the queue")?;
         }
-        let Some(compositor) = state.globals.compositor.as_ref() else {
+        if state.globals.compositor.is_none() {
             return Err(InitError::NoCompositor);
         };
-        let Some(surface) = state.base_surface.as_ref() else {
+        if state.base_surface.is_none() {
             return Err(InitError::NoBaseSurface);
         };
 
@@ -287,7 +287,7 @@ impl Dispatch<wl_registry::WlRegistry, ()> for WipWindow {
 impl Dispatch<WlSeat, ()> for WipWindow {
     fn event(
         state: &mut Self,
-        proxy: &WlSeat,
+        _: &WlSeat,
         event: <WlSeat as Proxy>::Event,
         _data: &(),
         _conn: &Connection,

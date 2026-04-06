@@ -31,9 +31,11 @@ impl Fade {
     pub fn direction(&self) -> Option<FadeDirection> {
         self.fade_direction
     }
+    #[expect(dead_code)]
     pub fn duration(&self) -> Duration {
         self.duration
     }
+    #[expect(dead_code)]
     pub fn duration_mut(&mut self) -> &mut Duration {
         &mut self.duration
     }
