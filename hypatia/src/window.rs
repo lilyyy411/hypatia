@@ -76,16 +76,21 @@ impl LayerOptions {
         }
     }
 }
-
+#[derive(Default)]
+struct Globals {
+    seat: Option<WlSeat>,
+    layer_shell: Option<ZwlrLayerShellV1>,
+    compositor: Option<WlCompositor>,
+}
 /// A window that is currently in the process of being initialized
 struct WipWindow {
     display: WlDisplay,
-    seat: Option<WlSeat>,
+
+    globals: Globals,
     base_surface: Option<WlSurface>,
-    compositor: Option<WlCompositor>,
     egl_surface: Option<WlEglSurface>,
     layer_surface: Option<ZwlrLayerSurfaceV1>,
-    layer_shell: Option<ZwlrLayerShellV1>,
+
     gl_ctx: Option<Rc<GlContext>>,
     dims: (u32, u32),
     error: Option<InitError>,
@@ -93,6 +98,7 @@ struct WipWindow {
     layer_surface_options: LayerOptions,
     wanted_output_name: Option<String>,
     output: Option<WlOutput>,
+    outputs_done: bool,
 }
 
 error_set! {
@@ -142,12 +148,10 @@ impl WipWindow {
 
         let mut state = WipWindow {
             display,
-            seat: None,
+            globals: Globals::default(),
             base_surface: None,
             egl_surface: None,
             layer_surface: None,
-            layer_shell: None,
-            compositor: None,
             gl_ctx: None,
             error: None,
             seat_capabilities: WEnum::Value(Capability::empty()),
@@ -155,6 +159,7 @@ impl WipWindow {
             wanted_output_name,
             dims: (0, 0),
             layer_surface_options,
+            outputs_done: false,
         };
         {
             let mut span = Span::new("phase-1");
@@ -163,6 +168,28 @@ impl WipWindow {
             event_queue
                 .roundtrip(&mut state)
                 .log_error("Failed to roundtrip the queue")?;
+        }
+        let Some(compositor) = state.globals.compositor.as_ref() else {
+            return Err(InitError::NoCompositor);
+        };
+        let Some(surface) = state.base_surface.as_ref() else {
+            return Err(InitError::NoBaseSurface);
+        };
+
+        if state.globals.seat.is_none() {
+            return Err(InitError::NoSeat);
+        }
+        // we have the globals now. now let's wait for output
+        if let Some(wanted_output) = state.wanted_output_name.clone() {
+            while !state.outputs_done {
+                _ = event_queue.blocking_dispatch(&mut state)?;
+            }
+            if state.output.is_none() {
+                warn!(
+                    "Could not find output with name {name}. Using default instead.",
+                    name = wanted_output.clone()
+                );
+            }
         }
         state.start_init_layer_surface(&qhandle);
         {
@@ -174,15 +201,6 @@ impl WipWindow {
                 .log_error("Failed to roundtrip the queue")?;
         }
 
-        if state.compositor.is_none() {
-            return Err(InitError::NoCompositor);
-        }
-        if state.base_surface.is_none() {
-            return Err(InitError::NoBaseSurface);
-        }
-        if state.seat.is_none() {
-            return Err(InitError::NoSeat);
-        }
         if state.layer_surface.is_none() {
             return Err(InitError::NoLayerShell);
         }
@@ -244,21 +262,22 @@ impl Dispatch<wl_registry::WlRegistry, ()> for WipWindow {
                     let compositor =
                         registry.bind::<wl_compositor::WlCompositor, _, _>(name, 1, qh, ());
                     let surface = compositor.create_surface(qh, ());
-                    state.compositor = Some(compositor);
+                    state.globals.compositor = Some(compositor);
                     state.base_surface = Some(surface);
                 }
                 i @ "wl_seat" => {
                     trace_reenter!("Handling interface {i}", i = i.to_owned());
-                    registry.bind::<wl_seat::WlSeat, _, _>(name, 1, qh, ());
+                    state.globals.seat =
+                        Some(registry.bind::<wl_seat::WlSeat, _, _>(name, 1, qh, ()));
                 }
                 i @ "zwlr_layer_shell_v1" => {
                     trace_reenter!("Handling interface {i}", i = i.to_owned());
                     let layershell = registry.bind::<ZwlrLayerShellV1, _, _>(name, 1, qh, ());
-                    state.layer_shell = Some(layershell);
+                    state.globals.layer_shell = Some(layershell);
                 }
                 i @ "wl_output" => {
                     trace_reenter!("Handling interface {i}", i = i.to_owned());
-                    let _ = registry.bind::<WlOutput, _, _>(name, 4, qh, ());
+                    registry.bind::<WlOutput, _, _>(name, 4, qh, ());
                 }
                 _ => {}
             }
@@ -274,7 +293,6 @@ impl Dispatch<WlSeat, ()> for WipWindow {
         _conn: &Connection,
         _qhandle: &QueueHandle<Self>,
     ) {
-        _ = state.seat.get_or_insert_with(|| proxy.clone());
         if let wl_seat::Event::Capabilities { capabilities } = event {
             debug!(
                 "Got capabilities {capabilities:?} for seat.",
@@ -299,6 +317,7 @@ impl Dispatch<WlOutput, ()> for WipWindow {
                 debug!("Found requested user output {name}", name = name.clone());
                 state.output = Some(proxy.clone());
             }
+            wl_output::Event::Done => state.outputs_done = true,
             _ => {}
         }
     }
@@ -323,7 +342,7 @@ impl WipWindow {
         debug!("Starting initialization of layer surface");
         let base_surface = self.base_surface.as_ref().unwrap();
 
-        let layershell = self.layer_shell.as_ref().unwrap();
+        let layershell = self.globals.layer_shell.as_ref().unwrap();
         if self.output.is_none()
             && let Some(output_name) = self.wanted_output_name.as_ref()
         {
@@ -576,7 +595,12 @@ impl Dispatch<ZwlrLayerSurfaceV1, ()> for WipWindow {
             state.layer_surface.as_ref().unwrap().ack_configure(serial);
 
             let base_surface = state.base_surface.as_ref().unwrap();
-            let region = state.compositor.as_ref().unwrap().create_region(qh, ());
+            let region = state
+                .globals
+                .compositor
+                .as_ref()
+                .unwrap()
+                .create_region(qh, ());
 
             region.add(0, 0, width as _, height as _);
             state.dims = (width, height);
@@ -621,9 +645,9 @@ impl LayerWindow {
         let window = LayerWindow {
             connection,
             display: window.display,
-            seat: window.seat.unwrap(),
+            seat: window.globals.seat.unwrap(),
             base_surface: window.base_surface.unwrap(),
-            compositor: window.compositor.unwrap(),
+            compositor: window.globals.compositor.unwrap(),
             egl_surface: window.egl_surface.unwrap(),
             seat_capabilities,
 
