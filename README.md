@@ -1,7 +1,11 @@
 # Hypatia - Live interactive desktop wallpapers for Wayland
 [![Docs](https://github.com/lilyyy411/hypatia/actions/workflows/deploy-docs.yml/badge.svg)](https://lilyyy411.github.io/hypatia/1-intro.html)
+[![License Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+![Pre-Release](https://img.shields.io/badge/Maturity-Pre%20Release-orange.svg)
 
-Disclaimer: This project is not even close to feature-complete yet and is likely buggy. I still need to finish the documentation.
+Disclaimer: This project is not even close to feature-complete yet and is likely buggy and I still need to finish the documentation.
 
 Hypatia is a modern feature-rich interactive live wallpaper application for Wayland compositors that support the layer shell protocol.
 It allows users to not only play videos on their desktop wallpaper, but also have custom responsive post-processing effects. 
