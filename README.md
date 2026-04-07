@@ -1,9 +1,11 @@
 # Hypatia - Live interactive desktop wallpapers for Wayland
+[![Docs](https://github.com/lilyyy411/hypatia/actions/workflows/deploy-docs.yml/badge.svg)](https://lilyyy411.github.io/hypatia/1-intro.html)
 
-Disclaimer: This project is not even close to feature-complete yet and is likely buggy. I still need to write documentation.
+Disclaimer: This project is not even close to feature-complete yet and is likely buggy. I still need to finish the documentation.
 
 Hypatia is a modern feature-rich interactive live wallpaper application for Wayland compositors that support the layer shell protocol.
 It allows users to not only play videos on their desktop wallpaper, but also have custom responsive post-processing effects. 
+
 
 ## Feature Overview
 - Play videos/static images on the desktop wallpaper
@@ -14,6 +16,10 @@ It allows users to not only play videos on their desktop wallpaper, but also hav
 
 Because of the extensive customization that Hypatia allows (see the `documentation` folder), it can also be used as a tool similar to ShaderToy (but local) 
 to be able to "just quickly test an effect." 
+
+## Documentation
+Documentation is in the form of an mdbook, located in the `book` directory of the repo and a rendered version 
+is hosted [here](<https://lilyyy411.github.io/hypatia/1-intro.html>). 
 
 ## Installing
 There are no prebuilt packages currently distributed. The only runtime dependency is the `mpv` video player and its library `libmpv`. 
