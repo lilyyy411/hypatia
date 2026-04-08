@@ -18,7 +18,7 @@ It allows users to not only play videos on their desktop wallpaper, but also hav
 - Change wallpapers with a transition effect (not implemented yet)
 - Does not sell your data to Fraser (if you know you know)
 
-Because of the extensive customization that Hypatia allows (see the `documentation` folder), it can also be used as a tool similar to ShaderToy (but local) 
+Because of the extensive customization that Hypatia allows (see the `book` folder), it can also be used as a tool similar to ShaderToy (but local) 
 to be able to "just quickly test an effect." 
 
 ## Documentation
