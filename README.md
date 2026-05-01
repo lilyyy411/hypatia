@@ -43,6 +43,7 @@ cargo install --path=.
 
 
 ## TODO
+- Rewrite to use Vulkan + libplacebo (top priority)
 - Implement IPC control
 - Implement transitions, custom transition shaders
 - Support screenshots
